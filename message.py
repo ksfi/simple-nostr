@@ -106,7 +106,6 @@ class Message:
 if __name__ == "__main__":
     RELAY = "wss://relay.damus.io"
     if len(sys.argv) == 2:
-        print("ici")
         PRIVKEY = secrets.token_bytes(32)
         sk = secp256k1.PrivateKey(PRIVKEY)
         PUBKEY = sk.pubkey.serialize()[1:]
