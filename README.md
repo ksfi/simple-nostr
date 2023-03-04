@@ -1,6 +1,6 @@
 # dummy-nostr
 
-Send notes to the the damus.io relay of the nostr network.
+Send notes to the the damus.io relay of the [nostr network](https://github.com/nostr-protocol/nostr).
 
 ```
 python3 message.py [msg]
