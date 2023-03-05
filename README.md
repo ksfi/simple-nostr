@@ -1,4 +1,4 @@
-# dummy-nostr
+# simple-nostr
 
 Send notes to the the damus.io relay of the [nostr network](https://github.com/nostr-protocol/nostr).
 
