@@ -37,27 +37,29 @@ class Message:
         return bytes(raw_secret)
 
     def from_nsec(self):
-
-        hrp, data, spec = bech32.bech32_decode(selfg.privkey)
+        hrp, data, spec = bech32.bech32_decode(self.privkey)
         raw_secret = bech32.convertbits(data, 5, 8)[:-1]
         return bytes(raw_secret)
 
     def sign_message_hash(self, hash):
         if self.keytype == "nsec":
-            privk = from_nsec(self.privkey)
+#             privk = from_nsec(self.privkey)
+            privk = self.from_nsec()
         elif self.keytype == "bytes":
             privk = self.privkey.hex()
         else:
             privk = self.privkey
 #         raw_secret = self.from_npub()
-        sk = secp256k1.PrivateKey(bytes.fromhex(privk))
+        sk = secp256k1.PrivateKey(bytes.fromhex(str(privk.hex())))
         sig = sk.schnorr_sign(hash, None, raw=True)
         return sig.hex()
 
     def get_id(self):
         if self.keytype == "nsec":
-            privk = from_nsec(self.privkey).hex()
-            pubk = from_npub(self.pubkey).hex()
+#             privk = from_nsec(self.privkey).hex()
+#             pubk = from_npub(self.pubkey).hex()
+            privk = self.from_nsec().hex()
+            pubk = self.from_npub().hex()
         elif self.keytype == "bytes":
             privk = self.privkey.hex()
             pubk = self.pubkey.hex()
@@ -78,8 +80,11 @@ class Message:
 
     def to_json(self):
         if self.keytype == "nsec":
-            privk = from_nsec(self.privkey).hex()
-            pubk = from_npub(self.pubkey).hex()
+            print("ICI\n---------\n---------")
+#             privk = from_nsec(self.privkey).hex()
+#             pubk = from_npub(self.pubkey).hex()
+            privk = self.from_nsec().hex()
+            pubk = self.from_npub().hex()
         elif self.keytype == "bytes":
             privk = self.privkey.hex()
             pubk = self.pubkey.hex()
@@ -105,15 +110,22 @@ class Message:
 
 if __name__ == "__main__":
     RELAY = "wss://relay.damus.io"
-    if len(sys.argv) == 2:
-        PRIVKEY = secrets.token_bytes(32)
-        sk = secp256k1.PrivateKey(PRIVKEY)
-        PUBKEY = sk.pubkey.serialize()[1:]
-    if len(sys.argv) == 4:
-        PRIVKEY = sys.argv[2]
-        PUBKEY = sys.argv[3]
-    if len(sys.argv) == 1 or len(sys.argv) > 4:
-        raise ValueError("python3 message.py [msg] or python3 message.py [msg] [privkey] [pubkey]")
 
-    m = Message(PRIVKEY, PUBKEY, sys.argv[1], RELAY)
-    asyncio.run(m.sendNote())
+    while (1):
+        ipt = input("[msg] OR [msg] // [privkey] // [pubkey] OR q to quit:\n").split(" // ")
+        if ipt[0].lower() == 'q':
+            print("END")
+            break
+        if len(ipt) == 1:
+            PRIVKEY = secrets.token_bytes(32)
+            sk = secp256k1.PrivateKey(PRIVKEY)
+            PUBKEY = sk.pubkey.serialize()[1:]
+        elif len(ipt) == 3:
+            PRIVKEY = ipt[1]
+            PUBKEY = ipt[2]
+        elif len(ipt) == 0 or len(ipt) > 4:
+            raise ValueError("python3 message.py [msg] or python3 message.py [msg] [privkey] [pubkey]")
+
+        m = Message(PRIVKEY, PUBKEY, ipt[0], RELAY)
+        asyncio.run(m.sendNote())
+        print("sent", ipt[0], "with PUBKEY", str(PUBKEY.hex()), "\n------------\n------------")
