@@ -43,21 +43,17 @@ class Message:
 
     def sign_message_hash(self, hash):
         if self.keytype == "nsec":
-#             privk = from_nsec(self.privkey)
             privk = self.from_nsec()
         elif self.keytype == "bytes":
             privk = self.privkey.hex()
         else:
             privk = self.privkey
-#         raw_secret = self.from_npub()
         sk = secp256k1.PrivateKey(bytes.fromhex(str(privk.hex())))
         sig = sk.schnorr_sign(hash, None, raw=True)
         return sig.hex()
 
     def get_id(self):
         if self.keytype == "nsec":
-#             privk = from_nsec(self.privkey).hex()
-#             pubk = from_npub(self.pubkey).hex()
             privk = self.from_nsec().hex()
             pubk = self.from_npub().hex()
         elif self.keytype == "bytes":
@@ -80,9 +76,6 @@ class Message:
 
     def to_json(self):
         if self.keytype == "nsec":
-            print("ICI\n---------\n---------")
-#             privk = from_nsec(self.privkey).hex()
-#             pubk = from_npub(self.pubkey).hex()
             privk = self.from_nsec().hex()
             pubk = self.from_npub().hex()
         elif self.keytype == "bytes":
@@ -128,4 +121,4 @@ if __name__ == "__main__":
 
         m = Message(PRIVKEY, PUBKEY, ipt[0], RELAY)
         asyncio.run(m.sendNote())
-        print("sent", ipt[0], "with PUBKEY", str(PUBKEY.hex()), "\n------------\n------------")
+        print("sent", ipt[0])
