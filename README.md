@@ -9,7 +9,7 @@ python3 message.py [msg]
 to send a note with a randomly generated pubkey and privkey.
 
 ```
-python3 message.py [msg] [privkey] [pubkey]
+python3 message.py [msg] // [privkey] // [pubkey]
 ```
 
 to send a note with specified keypair
