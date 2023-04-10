@@ -1,19 +1,16 @@
 import hashlib
 import asyncio
-import datetime
 import time
 import websockets
 import json
-import struct
-import binascii
 import secp256k1
 import bech32
 import secrets
-import sys
+import os
 
 # message = note
 class Message:
-    def __init__(self, privkey, pubkey, message, relay):
+    def __init__(self, relay, privkey, pubkey, message):
         if privkey[:4] == "nsec" and pubkey[:4] == "npub":
             self.keytype = "nsec"
             self.privkey = privkey
@@ -48,7 +45,10 @@ class Message:
             privk = self.privkey.hex()
         else:
             privk = self.privkey
-        sk = secp256k1.PrivateKey(bytes.fromhex(str(privk.hex())))
+        if type(self.privkey) != str:
+            sk = secp256k1.PrivateKey(bytes.fromhex(privk))
+        else:
+            sk = secp256k1.PrivateKey(bytes.fromhex(str(privk.hex())))
         sig = sk.schnorr_sign(hash, None, raw=True)
         return sig.hex()
 
@@ -60,7 +60,7 @@ class Message:
             privk = self.privkey.hex()
             pubk = self.pubkey.hex()
         else:
-            pubk = self.privkey
+            privk = self.privkey
             pubk = self.pubkey
         event = [
           0,
@@ -82,7 +82,7 @@ class Message:
             privk = self.privkey.hex()
             pubk = self.pubkey.hex()
         else:
-            pubk = self.privkey
+            privk = self.privkey
             pubk = self.pubkey
         ret = {
           "id": self.get_id().hex(),
@@ -99,26 +99,48 @@ class Message:
         note = json.dumps(["EVENT", self.to_json()], separators=(',', ':'), ensure_ascii=False)
         async with websockets.connect(self.relay) as websocket:
             await websocket.send(note)
-            await websocket.recv()
+
+    async def receive(self):
+        k = 0
+        sub = os.urandom(6).hex()
+        filters = {"kinds": [1], "limit": 5}
+        note = json.dumps(["REQ", sub, filters], separators=(',', ':'), ensure_ascii=False)
+        async with websockets.connect(self.relay) as ws:
+            while (k <= 4):
+                await ws.send(note)
+                m = await ws.recv()
+                m = json.loads(m)
+                print(f"\n-> by {m[2]['id']}\n-> {m[2]['content']}\n------------\n------------")
+                k += 1
+
+def key(ipt):
+    if len(ipt) == 1:
+        PRIVKEY = secrets.token_bytes(32)
+        sk = secp256k1.PrivateKey(PRIVKEY)
+        PUBKEY = sk.pubkey.serialize()[1:]
+    elif len(ipt) == 3:
+        PRIVKEY = ipt[1]
+        PUBKEY = ipt[2]
+    elif len(ipt) == 0 or len(ipt) > 4:
+        raise ValueError("python3 message.py [msg] or python3 message.py [msg] [privkey] [pubkey]")
+    return PRIVKEY, PUBKEY
 
 if __name__ == "__main__":
-    RELAY = "wss://relay.damus.io"
+    RELAY = input("ENTER A RELAY: (default: wss://relay.damus.io)\n")
+    if len(RELAY) == 0:
+        RELAY = "wss://relay.damus.io"
+    print(RELAY)
 
     while (1):
-        ipt = input("[msg] OR [msg] // [privkey] // [pubkey] OR q to quit:\n").split(" // ")
+        ipt = input("[msg] OR [msg] // [privkey] // [pubkey] OR q to quit OR enter to watch:\n").split(" // ")
         if ipt[0].lower() == 'q':
             print("END")
             break
-        if len(ipt) == 1:
-            PRIVKEY = secrets.token_bytes(32)
-            sk = secp256k1.PrivateKey(PRIVKEY)
-            PUBKEY = sk.pubkey.serialize()[1:]
-        elif len(ipt) == 3:
-            PRIVKEY = ipt[1]
-            PUBKEY = ipt[2]
-        elif len(ipt) == 0 or len(ipt) > 4:
-            raise ValueError("python3 message.py [msg] or python3 message.py [msg] [privkey] [pubkey]")
+        PRIVKEY, PUBKEY = key(ipt)
 
-        m = Message(PRIVKEY, PUBKEY, ipt[0], RELAY)
-        asyncio.run(m.sendNote())
-        print("sent", ipt[0])
+        if ipt[0].lower() == '':
+            m = Message(RELAY, PRIVKEY, PUBKEY, ipt[0])
+            asyncio.run(m.receive())
+        elif len(ipt[0]) > 0:
+            m = Message(RELAY, PRIVKEY, PUBKEY, ipt[0])
+            asyncio.run(m.sendNote())
