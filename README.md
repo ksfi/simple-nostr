@@ -1,5 +1,8 @@
 # simple-nostr
 
+A terminal based nostr client
+
+
 Send notes to the the damus.io relay of the [nostr network](https://github.com/nostr-protocol/nostr).
 
 Clone the repo and start running with
