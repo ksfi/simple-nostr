@@ -27,4 +27,4 @@ to send a note with specified keypair
 
 ### TODO
 
-handle multiple relays in command line
+DMs
