@@ -7,6 +7,7 @@ import secp256k1
 import bech32
 import secrets
 import os
+import datetime
 
 # message = note
 class Message:
@@ -28,9 +29,13 @@ class Message:
         self.message = message
         self.relay = relay
 
-    def from_npub(self):
-        hrp, data, spec = bech32.bech32_decode(self.pubkey)
-        raw_secret = bech32.convertbits(data, 5, 8)[:-1]
+    def from_npub(self, other=None):
+        if other is not None:
+            hrp, data, spec = bech32.bech32_decode(other)
+            raw_secret = bech32.convertbits(data, 5, 8)[:-1]
+        else:
+            hrp, data, spec = bech32.bech32_decode(self.pubkey)
+            raw_secret = bech32.convertbits(data, 5, 8)[:-1]
         return bytes(raw_secret)
 
     def from_nsec(self):
@@ -110,8 +115,44 @@ class Message:
                 await ws.send(note)
                 m = await ws.recv()
                 m = json.loads(m)
-                print(f"\n-> by {m[2]['id']}\n-> {m[2]['content']}\n------------\n------------")
+                tags_p = [x[1] for x in m[2]["tags"] if x[0] == 'p']
+                print(f"\n-> by {m[2]['id']} at {time.strftime('%H:%M:%S', time.gmtime(m[2]['created_at']))}\n-> {m[2]['content']}")
+                if len(tags_p) > 0:
+                    print(f"-> to {tags_p}")
+                print("------------\n------------")
                 k += 1
+
+class DM(Message):
+    def __init__(self, relay, privkey, pubkey, skPrivate, message, pubKeyOther):
+        self.theirPubKey = pubKeyOther
+        self.skPrivate = skPrivate
+
+    def getSecret(self):
+        pk = self.from_npub(self.theirPubKey)
+
+    def to_json(self):
+        if self.keytype == "nsec":
+            privk = self.from_nsec().hex()
+            pubk = self.from_npub().hex()
+        elif self.keytype == "bytes":
+            privk = self.privkey.hex()
+            pubk = self.pubkey.hex()
+        else:
+            privk = self.privkey
+            pubk = self.pubkey
+        ret = {
+          "id": self.get_id().hex(),
+          "pubkey": pubk,
+          "created_at": int(time.time()),
+          "kind": 4,
+          "tags": [],
+          "content": self.message,
+          "sig": self.sign_message_hash(self.get_id())
+        }
+        return ret
+
+    def communication(self):
+        pass
 
 def key(ipt):
     if len(ipt) == 1:
@@ -125,7 +166,7 @@ def key(ipt):
         raise ValueError("python3 message.py [msg] or python3 message.py [msg] [privkey] [pubkey]")
     return PRIVKEY, PUBKEY
 
-if __name__ == "__main__":
+def run():
     RELAY = input("ENTER A RELAY: (default: wss://relay.damus.io)\n")
     if len(RELAY) == 0:
         RELAY = "wss://relay.damus.io"
@@ -144,3 +185,9 @@ if __name__ == "__main__":
         elif len(ipt[0]) > 0:
             m = Message(RELAY, PRIVKEY, PUBKEY, ipt[0])
             asyncio.run(m.sendNote())
+
+if __name__ == "__main__":
+    run()
+
+
+
