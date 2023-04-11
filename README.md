@@ -27,4 +27,4 @@ to send a note with specified keypair
 
 ### TODO
 
-DMs
+DMs - TUI
