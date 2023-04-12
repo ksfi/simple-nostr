@@ -50,7 +50,8 @@ if __name__ == "__main__":
 #     ct = base64.b64encode(ct_bytes).decode('utf-8')
 #     print(ct)
 
+    pbkey = input("npub of your contact:\n")
     aes = AESCipher(PUBKEY)
-    dm = DM(RELAY, PRIVKEY, PUBKEY, '', "npub1prxd2w0eunppgfwnr9ppdx39dmcee2ltzra3n8c9gqgaqn56zz9snzex3w")
+    dm = DM(RELAY, PRIVKEY, PUBKEY, '', pbkey)
     dm.communication()
 
