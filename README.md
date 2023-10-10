@@ -7,7 +7,7 @@ Send notes and watch the [nostr network](https://github.com/nostr-protocol/nostr
 
 Clone the repo 
 ```
-https://github.com/ksfi/simple-nostr.git
+git clone https://github.com/ksfi/simple-nostr.git
 ```
 
 Start running with
