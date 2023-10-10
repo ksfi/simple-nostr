@@ -24,7 +24,3 @@ to send a note with a randomly generated pubkey and privkey.
 ```
 
 to send a note with specified keypair
-
-### TODO
-
-DMs - TUI
