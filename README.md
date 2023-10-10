@@ -5,7 +5,12 @@
 
 Send notes and watch the [nostr network](https://github.com/nostr-protocol/nostr).
 
-Clone the repo and start running with
+Clone the repo 
+```
+https://github.com/ksfi/simple-nostr.git
+```
+
+Start running with
 
 ```
 python3 message.py
