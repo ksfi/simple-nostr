@@ -5,7 +5,7 @@
 
 Send notes and watch the [nostr network](https://github.com/nostr-protocol/nostr).
 
-Clone the repo 
+Clone
 ```
 git clone https://github.com/ksfi/simple-nostr.git
 ```
