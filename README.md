@@ -17,15 +17,15 @@ python3 message.py
 ```
 
 
-Then,
+Send a note with a randomly generated account
+
 ```
 [msg]
 ```
 
-to send a note with a randomly generated pubkey and privkey.
+Send a note with your account keypair
 
 ```
 [msg] // [privkey] // [pubkey]
 ```
 
-to send a note with specified keypair
