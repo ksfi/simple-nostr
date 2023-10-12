@@ -10,7 +10,7 @@ Clone
 git clone https://github.com/ksfi/simple-nostr.git
 ```
 
-Start running with
+Run with
 
 ```
 python3 message.py
