@@ -1,6 +1,6 @@
 # simple-nostr
 
-## A terminal based nostr client.
+## A terminal based nostr client
 
 
 Send notes and watch the [nostr network](https://github.com/nostr-protocol/nostr).
