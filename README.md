@@ -1,6 +1,6 @@
 # simple-nostr
 
-## A terminal based nostr client
+## Command line nostr client
 
 
 Interact with the [nostr network](https://github.com/nostr-protocol/nostr).
