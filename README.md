@@ -3,7 +3,7 @@
 ## A terminal based nostr client
 
 
-Send notes and watch the [nostr network](https://github.com/nostr-protocol/nostr).
+Interact with the [nostr network](https://github.com/nostr-protocol/nostr).
 
 Clone
 ```
