@@ -16,7 +16,7 @@ pip install -r requirements.txt
 ```
 
 
-Run with
+Run
 
 ```
 python3 message.py
