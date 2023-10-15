@@ -23,7 +23,7 @@ python3 message.py
 ```
 
 
-Send a note with a randomly generated account
+Send a note with a random account
 
 ```
 [msg]
