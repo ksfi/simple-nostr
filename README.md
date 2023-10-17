@@ -10,7 +10,7 @@ Clone
 git clone https://github.com/ksfi/simple-nostr.git
 ```
 
-Install the requirements
+Requirements
 ```
 pip install -r requirements.txt
 ```
