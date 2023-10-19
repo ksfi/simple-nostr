@@ -29,7 +29,7 @@ Send a note with a random account
 [msg]
 ```
 
-Send a note with your account keypair
+Send a note with an account keypair
 
 ```
 [msg] // [privkey] // [pubkey]
