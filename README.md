@@ -35,3 +35,4 @@ Send a note with an account keypair
 [msg] // [privkey] // [pubkey]
 ```
 
+Adding DMs support
